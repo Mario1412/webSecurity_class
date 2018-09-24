@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Five-In-Row</title>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+    <script type="text/javascript">
+        var cavans;
+        var context;
+        var next_White;
+        var isWin = false;
+        var image_white = new Image();
+        var image_black = new Image();
+        image_black.src = '../static/black.png';
+        image_white.src = '../static/white.png';
+
+        //initial a two-dimensional array
+        var chess_array = [];
+        for (var i = 0; i < 15; i++) {
+            chess_array[i] = [];
+            for (var k = 0; k < 15; k++) {
+                chess_array[i][k] = 0;
+            }
+        }
+
+        //draw the chessboard
+        function draw_ground() {
+            cavans = document.getElementById('cavans');
+            context = cavans.getContext('2d');
+
+            for (i = 0; i <= 640; i = i + 40) {
+                context.beginPath();
+                context.moveTo(i, 0);
+                context.lineTo(i, 640);
+                context.closePath();
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(0, i);
+                context.lineTo(640, i);
+                context.closePath();
+                context.stroke();
+            }
+        }
+
+        //mousedown
+        function mouse_click(e) {
+            var xV = parseInt(e.clientX);
+            var yV = parseInt(e.clientY);
+
+            if ((xV < 20 || xV > 620) || (yV < 20 || yV > 620)) {
+                //do nothing
+                return;
+            } else {
+                var x = parseInt((xV - 20) / 40);
+                var y = parseInt((yV - 20) / 40);
+
+                if (chess_array[x][y] !== 0) {
+                    //do noting, in case of putting the chess duplicate
+                    return;
+                }
+
+                if (next_White) {
+                    next_White = false;
+                    drawc("white", x, y);
+                } else {
+                    next_White = true;
+                    drawc("black", x, y);
+                }
+            }
+        }
+
+        //draw the chess
+        function drawc(chess, x, y) {
+            if (isWin) {
+                setTimeout('alert("Finish the game....")', 1000);
+                return;
+            }
+
+            if (chess === "white") {
+                //draw the white chess
+                context.drawImage(image_white, (x + 1) * 40 - 20, (y + 1) * 40 - 20);
+                chess_array[x][y] = 1;
+            } else {
+                //draw the black chess
+                context.drawImage(image_black, (x + 1) * 40 - 20, (y + 1) * 40 - 20);
+                chess_array[x][y] = 2;
+            }
+
+            is_win(chess, x, y);
+        }
+
+        //let's figure out who is winner
+        function is_win(chess, x, y) {
+            var count_left_right = 0;
+            var count_up_down = 0;
+            var count_leftUp_rightDown = 0;
+            var count_leftDown_rightUp = 0;
+
+            var temp = chess === "white" ? 1 : 2;
+
+            //left - right
+            for (var i = x; i >= 0; i--) {
+                if (chess_array[i][y] !== temp)
+                    break;
+                count_left_right++;
+            }
+            for (var i = x + 1; i < 15; i++) {
+                if (chess_array[i][y] !== temp)
+                    break;
+                count_left_right++;
+            }
+
+            //up - down
+            for (var i = y; i >= 0; i--) {
+                if (chess_array[x][i] !== temp)
+                    break;
+                count_up_down++;
+            }
+            for (var i = y + 1; i < 15; i++) {
+                if (chess_array[x][i] !== temp)
+                    break;
+                count_up_down++;
+            }
+
+            //left_up_right_down
+            for (var k = x, j = y; k >= 0 && j >= 0; k--, j--) {
+                if (chess_array[k][j] !== temp)
+                    break;
+                count_leftUp_rightDown++;
+            }
+            for (var k = x + 1, j = y + 1; k < 15 && j < 15; k++, j++) {
+                if (chess_array[k][j] !== temp)
+                    break;
+                count_leftUp_rightDown++;
+            }
+
+            //left_down_right_up
+            for (var k = x, j = y; k >= 0 && j < 15; k--, j++) {
+                if (chess_array[k][j] !== temp)
+                    break;
+                count_leftDown_rightUp++;
+            }
+            for (var k = x + 1, j = y - 1; k < 15 && j >= 0; k++ , j--) {
+                if (chess_array[k][j] !== temp)
+                    break;
+                count_leftDown_rightUp++;
+            }
+
+            if (count_left_right >= 5 || count_up_down >= 5 || count_leftUp_rightDown >= 5 || count_leftDown_rightUp >= 5) {
+                setTimeout(function () {
+                    f(chess)
+                }, 10);
+                isWin = true;
+            }
+        }
+
+        function f(chess) {
+            alert(chess + " chess win!!!!");
+        }
+    </script>
+</head>
+<body style="background-color: bisque" onload="draw_ground()">
+<canvas width="640" height="640" id="cavans" onmousedown="mouse_click(event)">
+    oOps~ seems your browser doesn&#180;t support the canvas
+</canvas>
+</body>
+</html>

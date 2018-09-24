@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Five-In-Row</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js"></script>
+
+    <script type="text/javascript">
+        // var socket = io.connect("http://10.0.0.48:5000/ai_canvas");
+        var socket = io.connect("http://127.0.0.1:5000/ai_canvas");
+
+        var cavans;
+        var context;
+        var is_white = false;
+        var image_white = new Image();
+        var image_black = new Image();
+        var current_x;
+        var current_y;
+        var current_count = 0;
+        var is_win;
+        var startable = true;
+        var is_finish = false;
+
+        image_black.src = '../static/black.png';
+        image_white.src = '../static/white.png';
+
+
+        socket.on('ai_draw', function (msg) {
+            console.log("aaa :" + msg.toString());
+            if (startable) {
+                if (msg.flag === 'fail') {
+                    console.log(msg);
+                    current_count = 0;
+                    return;
+                }
+                is_win = msg.is_win;
+                console.log("is_win:" + is_win);
+
+                if (is_win === true && msg.who_win === 'human') {
+                    which_draw(is_white, msg.chess.x, msg.chess.y);
+                } else {
+                    //draw human
+                    which_draw(is_white, msg.chess.x, msg.chess.y);
+
+                    //draw ai
+                    which_draw(msg.chess_ai.ai_is_white, msg.chess_ai.ai_x, msg.chess_ai.ai_y);
+                }
+
+                if (is_win) {
+                    alert(msg.who_win + ' win the game!!!!!!!!');
+                    is_finish = true;
+                    startable = false;
+                }
+                current_count = 0;
+            }
+        });
+
+        function which_draw(draw_is_white, x, y) {
+            if (draw_is_white) {
+                drawc("white", x, y);
+            } else {
+                drawc("black", x, y);
+            }
+        }
+
+        //draw the chessboard
+        function draw_ground() {
+            cavans = document.getElementById('canvas');
+            context = cavans.getContext('2d');
+
+            for (i = 0; i <= 640; i = i + 40) {
+                context.beginPath();
+                context.moveTo(i, 0);
+                context.lineTo(i, 640);
+                context.closePath();
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(0, i);
+                context.lineTo(640, i);
+                context.closePath();
+                context.stroke();
+            }
+        }
+
+        function dicide() {
+            var data = {
+                data: JSON.stringify({
+                    'is_white': is_white
+                })
+            };
+
+            $.post({
+                url: 'ai_decide',
+                method: 'POST',
+                data: data,
+
+                success: function (msg) {
+                    console.log(msg);
+                    if (msg.flag === "oversize") {
+                        alert("you must wait other finishing the game");
+                        startable = false;
+                        return
+                    }
+
+                    is_white = msg.is_white;
+                    console.log('is_white:' + is_white)
+                }
+            });
+        }
+
+        //mousedown
+        function mouse_click(e) {
+            if (is_finish) {
+                alert('The game has finished....')
+                return;
+            }
+
+            if (!startable) {
+                alert("you can't not start game....")
+                return
+            }
+
+            current_x = parseInt(e.clientX);
+            current_y = parseInt(e.clientY);
+
+            current_count++;
+            if (current_count > 1) {
+                alert("not your turn!!!");
+                return;
+            }
+
+            if ((current_x < 20 || current_x > 620) || (current_y < 20 || current_y > 620)) {
+                current_count = 0;
+                //do nothing
+            } else {
+
+                var x = parseInt((current_x - 20) / 40);
+                var y = parseInt((current_y - 20) / 40);
+
+                var data = {
+                    data: JSON.stringify({
+                        'xV': x,
+                        'yV': y,
+                        'is_white': is_white
+                    })
+                };
+                socket.emit('ai_draw', data);
+            }
+        }
+
+        //draw the chess
+        function drawc(chess, x, y) {
+            if (chess === "white") {
+                //draw the white chess
+                context.drawImage(image_white, (x + 1) * 40 - 20, (y + 1) * 40 - 20);
+            } else {
+                //draw the black chess
+                context.drawImage(image_black, (x + 1) * 40 - 20, (y + 1) * 40 - 20);
+            }
+        }
+    </script>
+</head>
+<body style="background-color: bisque" onload="draw_ground(),dicide()">
+<canvas width="640" height="640" id="canvas" onmousedown="mouse_click(event)">
+    oOps~ seems your browser doesn&#180;t support the canvas
+</canvas>
+</body>
+</html>

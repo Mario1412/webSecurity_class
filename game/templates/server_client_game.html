@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Five-In-Row</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js"></script>
+
+    <script type="text/javascript">
+        // var socket = io.connect("http://10.0.0.48:5000/canvas");
+        var socket = io.connect("http://127.0.0.1:5000/canvas");
+
+        var cavans;
+        var context;
+        var is_white = false;
+        var image_white = new Image();
+        var image_black = new Image();
+        var current_x;
+        var current_y;
+        var current_count = 0;
+        var is_win;
+        var startable = true;
+        var is_finish = false;
+
+        image_black.src = '../static/black.png';
+        image_white.src = '../static/white.png';
+
+
+        socket.on('draw', function (msg) {
+            if (startable) {
+                if (msg.count === 1) {
+                    alert("you need to make sure your counterpart is ready to play....");
+                    return;
+                }
+
+                if (msg.flag === 'fail') {
+                    console.log(msg);
+                    current_count = 0;
+                    return;
+                }
+                is_win = msg.chess.is_win;
+                draw_is_white = msg.chess.is_white;
+                if (draw_is_white !== is_white) {
+                    current_count = 0;
+                }
+
+                if (draw_is_white) {
+                    drawc("white", msg.chess.x, msg.chess.y, is_win);
+                } else {
+                    drawc("black", msg.chess.x, msg.chess.y, is_win);
+                }
+            }
+        });
+
+        //draw the chessboard
+        function draw_ground() {
+            cavans = document.getElementById('canvas');
+            context = cavans.getContext('2d');
+
+            for (i = 0; i <= 640; i = i + 40) {
+                context.beginPath();
+                context.moveTo(i, 0);
+                context.lineTo(i, 640);
+                context.closePath();
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(0, i);
+                context.lineTo(640, i);
+                context.closePath();
+                context.stroke();
+            }
+        }
+
+        function dicide() {
+            var data = {
+                data: JSON.stringify({
+                    'is_white': is_white
+                })
+            };
+
+            $.post({
+                url: 'decide',
+                method: 'POST',
+                data: data,
+
+                success: function (msg) {
+                    console.log(msg);
+                    if (msg.flag === "oversize") {
+                        alert("you must wait other two guys finishing the game");
+                        startable = false;
+                        return
+                    }
+
+                    is_white = msg.is_white;
+                    console.log('is_white:' + is_white)
+                }
+            });
+        }
+
+        //mousedown
+        function mouse_click(e) {
+            if (is_finish) {
+                alert('The game has finished....')
+                return;
+            }
+
+            if (!startable) {
+                alert("you can't not start game....")
+                return
+            }
+
+            current_x = parseInt(e.clientX);
+            current_y = parseInt(e.clientY);
+
+            current_count++;
+            if (current_count > 1) {
+                alert("not your turn!!!");
+                return;
+            }
+
+            if ((current_x < 20 || current_x > 620) || (current_y < 20 || current_y > 620)) {
+                current_count = 0;
+                //do nothing
+            } else {
+
+                var x = parseInt((current_x - 20) / 40);
+                var y = parseInt((current_y - 20) / 40);
+
+                var data = {
+                    data: JSON.stringify({
+                        'xV': x,
+                        'yV': y,
+                        'is_white': is_white
+                    })
+                };
+                socket.emit('draw', data);
+            }
+        }
+
+        //draw the chess
+        function drawc(chess, x, y, is_win) {
+            if (chess === "white") {
+                //draw the white chess
+                context.drawImage(image_white, (x + 1) * 40 - 20, (y + 1) * 40 - 20);
+            } else {
+                //draw the black chess
+                context.drawImage(image_black, (x + 1) * 40 - 20, (y + 1) * 40 - 20);
+            }
+
+            if (is_win) {
+                alert(chess + ' win the game!!!!!!!!');
+                is_finish = true;
+                startable = false;
+            }
+        }
+    </script>
+</head>
+<body style="background-color: bisque" onload="draw_ground(),dicide()">
+<canvas width="640" height="640" id="canvas" onmousedown="mouse_click(event)">
+    oOps~ seems your browser doesn&#180;t support the canvas
+</canvas>
+</body>
+</html>
