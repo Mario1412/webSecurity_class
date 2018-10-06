@@ -1,1 +1,3 @@
-document.getElementById("gif").addEventListener("load", function(){startTimer('{{ timer }}');})
+document.getElementById("gif").addEventListener("load", function () {
+    startTimer('{{ timer }}');
+})

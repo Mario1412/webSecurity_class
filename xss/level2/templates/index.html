@@ -1,43 +1,43 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <!-- Internal game scripts/styles, mostly boring stuff -->
-    <link rel="stylesheet" href="https://xss-game.appspot.com/static/game-frame-styles.css" />
- 
+    <link rel="stylesheet" href="https://xss-game.appspot.com/static/game-frame-styles.css"/>
+
     <!-- This is our database of messages -->
     <script src="https://xss-game.appspot.com/static/post-store.js"></script>
-   
+
     <script src=/static/level_2.js></script>
- 
-  </head>
- 
-  <body id="level2">
-    <div id="header">
-      <img src="https://xss-game.appspot.com/static/logos/level2.png" /> 
-      <div>Chatter from across the Web.</div>
-      <form action="?" id="clear-form">
+
+</head>
+
+<body id="level2">
+<div id="header">
+    <img src="https://xss-game.appspot.com/static/logos/level2.png"/>
+    <div>Chatter from across the Web.</div>
+    <form action="?" id="clear-form">
         <input class="clear" type="submit" value="Clear all posts">
-      </form>
-    </div>
- 
-    <div id="post-container"></div>
- 
-    <table class="message">
-      <tr>
+    </form>
+</div>
+
+<div id="post-container"></div>
+
+<table class="message">
+    <tr>
         <td valign="top">
-          <img src="https://xss-game.appspot.com/static/level2_icon.png">
+            <img src="https://xss-game.appspot.com/static/level2_icon.png">
         </td>
         <td class="message-container">
-          <div class="shim"></div>
-          <form action="?" id="post-form">
+            <div class="shim"></div>
+            <form action="?" id="post-form">
             <textarea id="post-content" name="content" rows="2"
-              cols="50"></textarea>
-            <input class="share" type="submit" value="Share status!">
-            <input type="hidden" name="action" value="sign">
-          </form>
+                      cols="50"></textarea>
+                <input class="share" type="submit" value="Share status!">
+                <input type="hidden" name="action" value="sign">
+            </form>
         </td>
-      </tr>
-    </table>
- 
-  </body>
+    </tr>
+</table>
+
+</body>
 </html>

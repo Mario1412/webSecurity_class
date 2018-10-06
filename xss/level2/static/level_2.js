@@ -8,10 +8,10 @@ function displayPosts() {
     containerEl.innerHTML = "";
 
     var posts = DB.getPosts();
-    for (var i=0; i<posts.length; i++) {
+    for (var i = 0; i < posts.length; i++) {
         // encode the posts's message from the second post
         var message;
-        (i == 0) ? (message = posts[i].message) : (message = encodeText(posts[i].message));  
+        (i == 0) ? (message = posts[i].message) : (message = encodeText(posts[i].message));
 
         var html = '<table class="message"> <tr> <td valign=top> '
             + '<img src="https://xss-game.appspot.com/static/level2_icon.png"> </td> <td valign=top '
@@ -21,7 +21,7 @@ function displayPosts() {
         html += '<span class="date">' + new Date(posts[i].date) + '</span>';
         html += "<blockquote>" + message + "</blockquote";
         html += "</td></tr></table>"
-        containerEl.innerHTML += html; 
+        containerEl.innerHTML += html;
     }
 }
 
@@ -35,15 +35,19 @@ function encodeText(text) {
 }
 
 
-window.onload = function() { 
-    document.getElementById('clear-form').onsubmit = function() {
-        DB.clear(function() { displayPosts() });
+window.onload = function () {
+    document.getElementById('clear-form').onsubmit = function () {
+        DB.clear(function () {
+            displayPosts()
+        });
         return false;
     }
 
-    document.getElementById('post-form').onsubmit = function() {
+    document.getElementById('post-form').onsubmit = function () {
         var message = document.getElementById('post-content').value;
-        DB.save(message, function() { displayPosts() } );
+        DB.save(message, function () {
+            displayPosts()
+        });
         document.getElementById('post-content').value = "";
         return false;
     }
