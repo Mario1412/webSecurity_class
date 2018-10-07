@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route("/")
 @csp_header({
     "default-src": "'self'",
-    "script-src": "'self' https://xss-game.appspot.com",
+    "script-src": "'self' https://xss-game.appspot.com/static/post-store.js",
     "img-src": "https://xss-game.appspot.com/static/logos/level2.png "
                "https://xss-game.appspot.com/static/level2_icon.png "
                "https://ssl.gstatic.com/s2/oz/images/sprites/stream-e001443aa61c5529c1aa133a9c12bb49.png",
