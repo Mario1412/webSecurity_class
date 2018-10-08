@@ -7,7 +7,7 @@ app.debug = True
 
 csp_json = {
     "script-src": "'self' http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js "
-                  "'sha256-0647o+exr5Gnz/S9rGgsP7owBQHApoD9+sai50tdXgc='",
+                  "'sha256-cN25VmyGJVDLdpkS+JoZ3jMxtke1QdPN8mucaJj/2bc='",
     "img-src": "https://xss-game.appspot.com/static/logos/level5.png ",
     "default-src": "self",
     "style-src": "https://xss-game.appspot.com/static/game-frame-styles.css",
@@ -39,7 +39,7 @@ def signup():
     # injection vulnerability. return render_template('signup.html', next="confirm.html")
 
 
-@app.route('/confirm', methods=['GET'])
+@app.route('/confirm_csp2', methods=['GET'])
 def confirm():
     return render_template('confirm_csp2.html')
 

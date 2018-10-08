@@ -2,6 +2,7 @@ import cgi
 
 import webapp2
 import webapp2_static
+from flask_csp.csp import create_csp_header
 from paste import httpserver
 
 page_header = """
@@ -54,7 +55,7 @@ class MainPage(webapp2.RequestHandler):
         # Disable the reflected XSS filter for demonstration purposes
         self.response.headers.add_header("X-XSS-Protection", "0")
         # add csp policy to header
-        # self.response.headers.add_header("Content-Security-Policy", create_csp_header(csp_json))
+        self.response.headers.add_header("Content-Security-Policy", create_csp_header(csp_json))
 
         if not self.request.get('query'):
             # Show main search page
