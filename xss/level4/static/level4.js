@@ -1,3 +1,7 @@
+document.getElementById("gif").addEventListener("load", function () {
+    startTimer('{{ timer }}');
+})
+
 function startTimer(seconds) {
     seconds = parseInt(seconds) || 3;
     setTimeout(function () {

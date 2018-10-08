@@ -1,4 +1,4 @@
-from flask import render_template, Flask, request
+from flask import render_template, Flask, request, after_this_request
 from flask_csp.csp import create_csp_header
 import re
 
@@ -9,14 +9,9 @@ csp_json = {
     "script-src": "'self' http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js "
                   "'sha256-0647o+exr5Gnz/S9rGgsP7owBQHApoD9+sai50tdXgc='",
     "img-src": "https://xss-game.appspot.com/static/logos/level5.png ",
-    "child-src": "",
     "default-src": "self",
-    "plugin-src": "",
     "style-src": "https://xss-game.appspot.com/static/game-frame-styles.css",
-    "media-src": "",
-    "object-src": "",
-    "connect-src": "",
-    "base-uri": "",
+    "report-uri": "",
 }
 
 
@@ -46,7 +41,17 @@ def signup():
 
 @app.route('/confirm', methods=['GET'])
 def confirm():
-    return render_template('confirm.html')
+    return render_template('confirm_csp2.html')
+
+
+@app.route('/confirm_csp1', methods=['GET'])
+def confirm_csp1():
+    @after_this_request
+    def add_header(response):
+        csp_json['script-src'] = "'self' http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js "
+        response.headers['Content-Security-Policy'] = create_csp_header(csp_json)
+        return response
+    return render_template('confirm_csp1.html')
 
 
 # When using this interceptor, I set every content-security-policy. So with this method, I don't waste time write

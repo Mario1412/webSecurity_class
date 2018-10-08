@@ -1,20 +1,52 @@
-from flask import Flask, render_template
-from flask_csp.csp import csp_header
+from flask import Flask, render_template, after_this_request
+from flask_csp.csp import csp_header, create_csp_header
+import hashlib
+
+m = hashlib.sha256("hello")
 
 app = Flask(__name__)
 
 
-@app.route("/")
+# generate random nonce
+def generate_nonce():
+    global m
+    m.update("hello world")
+    return m.hexdigest()
+
+
+@app.route("/csp1")
 @csp_header({
     "default-src": "'self'",
     "script-src": "'self' https://xss-game.appspot.com/static/post-store.js",
     "img-src": "https://xss-game.appspot.com/static/logos/level2.png "
                "https://xss-game.appspot.com/static/level2_icon.png "
                "https://ssl.gstatic.com/s2/oz/images/sprites/stream-e001443aa61c5529c1aa133a9c12bb49.png",
-    "style-src": "https://xss-game.appspot.com/static/game-frame-styles.css"
+    "style-src": "https://xss-game.appspot.com/static/game-frame-styles.css",
+    "report-uri": ""
 })
-def index():
-    return render_template('index.html')
+def index_csp1():
+    return render_template('index_csp1.html')
+
+
+@app.route("/csp2")
+def index_csp2():
+    nonce = generate_nonce()
+    csp_json = {
+        "default-src": "'self'",
+        'script-src': "'self' https://xss-game.appspot.com/static/post-store.js 'nonce-" + nonce + "'",
+        "img-src": "https://xss-game.appspot.com/static/logos/level2.png "
+                   "https://xss-game.appspot.com/static/level2_icon.png "
+                   "https://ssl.gstatic.com/s2/oz/images/sprites/stream-e001443aa61c5529c1aa133a9c12bb49.png",
+        "style-src": "https://xss-game.appspot.com/static/game-frame-styles.css",
+        "report-uri": ""
+    }
+
+    @after_this_request
+    def add_header(response):
+        response.headers['Content-Security-Policy'] = create_csp_header(csp_json)
+        return response
+
+    return render_template('index_csp2.html', nonce=nonce)
 
 
 if __name__ == "__main__":

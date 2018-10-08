@@ -1,15 +1,17 @@
-import webapp2
 import cgi
-from flask_csp.csp import create_csp_header
+
+import webapp2
+import webapp2_static
+from paste import httpserver
 
 page_header = """
 <!doctype html>
 <html>
   <head>
     <!-- Internal game scripts/styles, mostly boring stuff -->
-    <link rel="stylesheet" href="https://xss-game.appspot.com/static/game-frame-styles.css" />
+    <link rel="stylesheet" href="https://xss-game.appspot.com/static/game-frame-styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
-    <script>$(document).ready(function(){$('#query').focus(function(){$(this).val("");});});</script>
+    <script src="static/level1.js"></script>
   </head>
  
   <body id="level1">
@@ -19,14 +21,15 @@ page_header = """
 
 page_footer = """
     </div>
+   
   </body>
 </html>
 """
 
 main_page_markup = """
 <form action="" method="GET">
-  <input id="query" name="query" value="Enter query here...">
-  <input id="button" type="submit" value="Search">
+  <input id="query" name="query" value="Enter query here..." />
+  <input id="button" type="submit" value="Search" />
 </form>
 """
 
@@ -42,23 +45,16 @@ class MainPage(webapp2.RequestHandler):
         # onclick="[JAVASCRIPT]"> with appropriate addEventListener calls(
         # https://www.html5rocks.com/en/tutorials/security/content-security-policy/)
         csp_json = {
-            "script-src": "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js "
-                          "'sha256-h6wTjHUH5feO5x5t9UyBsoZr6dMUtn9mb9wHpKUf7Uw='",
+            "script-src": "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js 'self'",
             "img-src": "https://xss-game.appspot.com/static/logos/level1.png",
-            "child-src": "",
             "default-src": "self",
-            "plugin-src": "",
             "style-src": "https://xss-game.appspot.com/static/game-frame-styles.css",
-            "media-src": "",
-            "object-src": "",
-            "connect-src": "",
-            "base-uri": "",
         }
 
         # Disable the reflected XSS filter for demonstration purposes
         self.response.headers.add_header("X-XSS-Protection", "0")
         # add csp policy to header
-        self.response.headers.add_header("Content-Security-Policy", create_csp_header(csp_json))
+        # self.response.headers.add_header("Content-Security-Policy", create_csp_header(csp_json))
 
         if not self.request.get('query'):
             # Show main search page
@@ -72,11 +68,13 @@ class MainPage(webapp2.RequestHandler):
 
             # Display the results page
             self.render_string(page_header + message + page_footer)
-
         return
 
 
-app = webapp2.WSGIApplication([('.*', MainPage), ], debug=False)
+app = webapp2.WSGIApplication([
+    (r'/', MainPage),
+    (r'/static/(.+)', webapp2_static.StaticFileHandler)
+], config={'webapp2_static.static_file_path': './static'})
 
 
 def escapeHtml(html):
@@ -84,7 +82,6 @@ def escapeHtml(html):
 
 
 def main():
-    from paste import httpserver
     httpserver.serve(app, host='127.0.0.1', port='8080')
 
 
