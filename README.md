@@ -45,4 +45,4 @@ After starting the whole application, you need to take some actions as follow:
 2. If the user refreshes the browser when playing the game, you need to restart the server, otherwise the game won't continue.
 
 ## Homework 2: Cross-site Scripting: Attack and Defense
-The detail instruction can be found in /xss directory. Please check it 
+The detail instruction can be found in /xss/xss-hw2-instruction.html. Please check it 
