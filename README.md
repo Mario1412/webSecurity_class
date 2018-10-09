@@ -1,7 +1,11 @@
 # webSecurity_class
-## Five in a row
 [toc]
 
+## project requirement
+1. project 1: /game/proj1.pdf
+2. project 2: /xss/proj2.pdf
+
+## Homework 1: Five in a row
 ### How to run
 the content of project does follow:
 ```
@@ -17,7 +21,6 @@ the content of project does follow:
         server_client_game.html
 ```
 The main function exists in helloWorld.py. So in order to run the whole application, you need to execute the command-line: ```python helloWorld.py``` in your console.
-
 
 ### A javascript client
 Open the file 'local_game_cavans.html' and you don't need to start the whole project.
@@ -40,3 +43,6 @@ After starting the whole application, you need to take some actions as follow:
 **note:**There are some limitations when playing the game
 1. Only one user is allowed to play the game at the same time
 2. If the user refreshes the browser when playing the game, you need to restart the server, otherwise the game won't continue.
+
+## Homework 2: Cross-site Scripting: Attack and Defense
+The detail instruction can be found in /xss directory. Please check it 
