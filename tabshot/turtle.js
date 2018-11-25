@@ -20,15 +20,9 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
                 if (tab.active) {
                     console.log(tab.id + "existed..." + tab.url);
                     if (tab.url && !/^chrome/.test(tab.url)) {
-                        chrome.tabs.captureVisibleTab(activeInfo.windowId, function (dataUrl) {
-                            var baseUrl = tabs_Image[tab.id];
-                            console.log(baseUrl === dataUrl);
-                            try {
-                                process(tab.id, tab.windowId, baseUrl, dataUrl);
-                            } catch (e) {
-                                console.log(e);
-                            }
-                        });
+                        setTimeout(function () {
+                            process(tab.id, tab.windowId)
+                        }, 500)
                     }
                 }
             }
@@ -36,6 +30,9 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     });
 });
 
+/**
+ * when the tab is updated
+ */
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
     if (tab.active && changeInfo.status === "complete") {

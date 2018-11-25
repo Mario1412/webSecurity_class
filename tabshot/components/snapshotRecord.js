@@ -22,12 +22,21 @@ function recordPage(tabId, windowId) {
  * @param url1
  * @param url2
  */
-function process(id, windowId, url1, url2) {
-    resemble(url1).compareTo(url2).onComplete(function (data) {
-        current_img = data.getImageDataUrl();
-        popBadge(id, data.misMatchPercentage);
-        record(id, windowId);
+function process(id, windowId) {
+    chrome.tabs.captureVisibleTab(windowId, function (dataUrl) {
+        var baseUrl = tabs_Image[id];
+        console.log(baseUrl === dataUrl);
+        try {
+            resemble(baseUrl).compareTo(dataUrl).onComplete(function (data) {
+                current_img = data.getImageDataUrl();
+                popBadge(id, data.misMatchPercentage);
+                record(id, windowId);
+            });
+        } catch (e) {
+            console.log(e);
+        }
     });
+
 }
 
 /**
@@ -38,7 +47,7 @@ function process(id, windowId, url1, url2) {
 function popBadge(tabId, score) {
     console.log("the score is " + score);
     var color = [255, 0, 0, 200];
-    if (score <= 10) {
+    if (score <= 5) {
         color = [0, 0, 255, 200]; //blue
     } else if (score <= 30) {
         color = [255, 255, 0, 200]; //yellow
