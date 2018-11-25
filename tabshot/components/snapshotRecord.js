@@ -41,7 +41,7 @@ function popBadge(tabId, score) {
 }
 
 function record(tabId, windowId) {
-    recordPage(tabId, windowId);
+    // recordPage(tabId, windowId);
     current_timer = setInterval(function () {
         console.log("the interval in activeListener..." + tabId);
         recordPage(tabId, windowId);
