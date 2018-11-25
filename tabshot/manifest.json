@@ -1,0 +1,35 @@
+{
+  "name": "Ninja Turtles",
+  "version": "1.0",
+  "description": "Fuck the Tabnabbing attack",
+  "manifest_version": 2,
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "components/resemble.js",
+      "components/snapshotRecord.js",
+      "turtle.js",
+      "popup.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "tabShot",
+    "default_icon": {
+      "16": "image/turtle_16.png",
+      "24": "image/turtle_24.png",
+      "32": "image/turtle_32.png",
+      "64": "image/turtle_64.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "image/turtle_16.png",
+    "24": "image/turtle_24.png",
+    "32": "image/turtle_32.png",
+    "64": "image/turtle_64.png"
+  },
+  "permissions": [
+    "tabs",
+    "<all_urls>"
+  ]
+}
