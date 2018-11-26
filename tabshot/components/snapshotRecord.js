@@ -67,7 +67,7 @@ function popBadge(tabId, windowId, score) {
     chrome.tabs.query({active: true, windowId: windowId}, function (tabs) {
         var tab = tabs[0];
         if (tab === undefined || !tab.active || tab.id !== tabId) {
-            return
+            return;
         }
         chrome.tabs.get(tabId, function (tab) {
             if (tab.active) {
@@ -102,6 +102,9 @@ function record(tabId, windowId) {
 
 }
 
+/**
+ * clear the tab interval to make sure every new tab or activated tab has single interval
+ */
 function clearTheInterval() {
     if (current_timer != null) {
         clearInterval(current_timer);

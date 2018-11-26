@@ -1,7 +1,8 @@
 {
   "name": "Ninja Turtles",
+  "author": "Tianhao Ma, AngeloOlcese",
   "version": "1.0",
-  "description": "Fuck the Tabnabbing attack",
+  "description": "Tabnabbing attack detection tool",
   "manifest_version": 2,
   "background": {
     "persistent": true,
