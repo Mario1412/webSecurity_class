@@ -5,9 +5,15 @@
  */
 function recordPage(tabId, windowId) {
     chrome.tabs.get(tabId, function (tab) {
-        if (tab.active) {
+        if (chrome.runtime.lastError) {
+            return;
+        }
+        if (tab !== undefined) {
             if (tab.url && !/^chrome/.test(tab.url)) {
                 chrome.tabs.captureVisibleTab(windowId, function (dataUrl) {
+                    if (chrome.runtime.lastError) {
+                        return;
+                    }
                     tabs_Image[tabId] = dataUrl;
                 });
             }
@@ -19,32 +25,36 @@ function recordPage(tabId, windowId) {
  * compare two image and calculate the scores
  * @param id
  * @param windowId
- * @param url1
- * @param url2
  */
 function process(id, windowId) {
-    chrome.tabs.captureVisibleTab(windowId, function (dataUrl) {
-        var baseUrl = tabs_Image[id];
-        console.log(baseUrl === dataUrl);
-        try {
-            resemble(baseUrl).compareTo(dataUrl).onComplete(function (data) {
-                current_img = data.getImageDataUrl();
-                popBadge(id, data.misMatchPercentage);
-                record(id, windowId);
-            });
-        } catch (e) {
-            console.log(e);
+    chrome.tabs.query({active: true, windowId: windowId}, function (tabs) {
+        var tab = tabs[0];
+        if (tab === undefined || !tab.active || tab.id !== id) {
+            return;
         }
+        chrome.tabs.captureVisibleTab(windowId, function (dataUrl) {
+            var baseUrl = tabs_Image[id];
+            console.log(baseUrl === dataUrl);
+            try {
+                resemble(baseUrl).compareTo(dataUrl).onComplete(function (data) {
+                    current_img = data.getImageDataUrl();
+                    popBadge(id, windowId, data.misMatchPercentage);
+                    record(id, windowId);
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        });
     });
-
 }
 
 /**
  * display the difference alert in the badge
  * @param tabId
+ * @param windowId
  * @param score
  */
-function popBadge(tabId, score) {
+function popBadge(tabId, windowId, score) {
     console.log("the score is " + score);
     var color = [255, 0, 0, 200];
     if (score <= 5) {
@@ -53,12 +63,23 @@ function popBadge(tabId, score) {
         color = [255, 255, 0, 200]; //yellow
     }
 
-    chrome.browserAction.setBadgeText({
-        "text": "   "
-    });
-    chrome.browserAction.setBadgeBackgroundColor({
-        "tabId": tabId,
-        "color": color
+
+    chrome.tabs.query({active: true, windowId: windowId}, function (tabs) {
+        var tab = tabs[0];
+        if (tab === undefined || !tab.active || tab.id !== tabId) {
+            return
+        }
+        chrome.tabs.get(tabId, function (tab) {
+            if (tab.active) {
+                chrome.browserAction.setBadgeText({
+                    text: "  "
+                });
+                chrome.browserAction.setBadgeBackgroundColor({
+                    "tabId": tabId,
+                    "color": color
+                });
+            }
+        });
     });
 }
 

@@ -22,7 +22,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
                     if (tab.url && !/^chrome/.test(tab.url)) {
                         setTimeout(function () {
                             process(tab.id, tab.windowId)
-                        }, 500)
+                        }, 250)
                     }
                 }
             }
@@ -54,9 +54,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
  * when the tab is closed
  */
 chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
-    if (removeInfo.isWindowClosing) {
-        clearTheInterval();
-    }
+    clearTheInterval();
     delete tabs_Image[tabId];
 });
 
