@@ -1,48 +1,23 @@
-# webSecurity_class
-[toc]
+# Chrome extension for detecting Tabnabbing Attacks
+[toc] 
+## Author
+Tianhao Ma, AngeloOlcese
 
-## project requirement
-1. project 1: /game/proj1.pdf
-2. project 2: /xss/proj2.pdf
+## Background
+Based on the paper [TabShots: Client-Side Detection of Tabnabbing Attacks](https://www.securitee.org/files/tabnabbing_asiaccs2013.pdf), we implement a tabnabbing attacks detection tool
 
-## Homework 1: Five in a row
-### How to run
-the content of project does follow:
-```
- -- game
-    -- app
-        helloWorld.py
-    -- static
-        black.png
-        white.png
-    -- template
-        ai_game.html
-        local_game_cavans.html
-        server_client_game.html
-```
-The main function exists in helloWorld.py. So in order to run the whole application, you need to execute the command-line: ```python helloWorld.py``` in your console.
+## How to run it
+1. Use the chrome to open ```chrome://extensions```
+2. Select ```Load unpacked``` and load the root directory of tabnabbing attacks detection tool
 
-### A javascript client
-Open the file 'local_game_cavans.html' and you don't need to start the whole project.
+## How to use it
+1. Navigate to any website and the detection tool will automatically and regularly take screenshots of the page.
+2. Navigate back to the page, the detection tool capture a new screenshot and compare it with the existed screenshot.
+3. There are three sign to signify the changes:
+    - Blue sign(low change or no change): this sign have a threshold of 5% change
+    - Yellow sign(medium change): this sign have a threshold of 30% change
+    - Red sign(high change): this sign signify over %30 change
+4. Click at the tabnabbing tool icon and check the specific change of the page, which is highlighted on red color. 
 
-### A server, two javascript client
-After starting the whole application, you need to take some actions as follow:
-1. Open the browser
-2. Type the link: http://127.0.0.1:5000 on two clients
-3. You can start the game unless both two clients are ready to play
-
-**note:**There are some limitations when playing the game
-1. When there are two players playing the game, no another player can open the browser and play the game, which means only two clients are allowed to connect the server at the same time
-2. When two players are playing the game and one of the player refreshes the browser and cause the game stuck, which will send a new request to server for building the connection, you need to restart the server. Otherwise, the game won't continue.
-
-### Ai battle
-After starting the whole application, you need to take some actions as follow:
-1. Open the browser
-2. Type the link: http://127.0.0.1:5000/ai
-
-**note:**There are some limitations when playing the game
-1. Only one user is allowed to play the game at the same time
-2. If the user refreshes the browser when playing the game, you need to restart the server, otherwise the game won't continue.
-
-## Homework 2: Cross-site Scripting: Attack and Defense
-The detail instruction can be found in /xss/xss-hw2-instruction.html. Please check it 
+## Test case
+http://www.azarask.in/blog/post/a-new-type-of-phishing-attack/
