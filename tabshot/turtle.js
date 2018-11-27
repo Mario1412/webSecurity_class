@@ -43,7 +43,19 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         }
 
         try {
-            record(tab.id, tab.windowId);
+            chrome.tabs.get(tabId, function (tab) {
+                if (tab.active) {
+                    chrome.browserAction.setBadgeText({
+                        text: "0"
+                    });
+                    chrome.browserAction.setBadgeBackgroundColor({
+                        "tabId": tabId,
+                        "color": [0, 0, 255, 200] //blue
+                    });
+                }
+                record(tab.id, tab.windowId);
+            });
+
         } catch (err) {
             console.log(err)
         }

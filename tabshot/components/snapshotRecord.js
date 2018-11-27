@@ -38,6 +38,22 @@ function process(id, windowId) {
             try {
                 resemble(baseUrl).compareTo(dataUrl).onComplete(function (data) {
                     current_img = data.getImageDataUrl();
+                    if (data.misMatchPercentage !== 0) {
+                        var script = "var img = document.createElement('img');" +
+                            "img.src = '" + data.getImageDataUrl() + "';" +
+                            "img.setAttribute('style', 'position: fixed; left: 0; top: 0; height: auto; width: auto; width:100%;overflow: hidden; pointer-events: none;');" +
+                            "img.setAttribute('id', 'overlay');" +
+
+                            "var d1 = document.createElement('div'); d1.id = 'overlay_div';" +
+                            "d1.appendChild(img);" +
+                            "document.body.appendChild(d1);" +
+                            "document.body.addEventListener('click', function (ev){ " +
+                            "var child=document.getElementById('overlay_div');child.parentNode.removeChild(child);},false);";
+                    }
+
+                    chrome.tabs.executeScript(id, {
+                        "code": script
+                    });
                     popBadge(id, windowId, data.misMatchPercentage);
                     record(id, windowId);
                 });
@@ -60,9 +76,8 @@ function popBadge(tabId, windowId, score) {
     if (score <= 5) {
         color = [0, 0, 255, 200]; //blue
     } else if (score <= 30) {
-        color = [255, 255, 0, 200]; //yellow
+        color = [248, 204, 0, 200]; //yellow
     }
-
 
     chrome.tabs.query({active: true, windowId: windowId}, function (tabs) {
         var tab = tabs[0];
@@ -72,7 +87,7 @@ function popBadge(tabId, windowId, score) {
         chrome.tabs.get(tabId, function (tab) {
             if (tab.active) {
                 chrome.browserAction.setBadgeText({
-                    text: "  "
+                    text: score
                 });
                 chrome.browserAction.setBadgeBackgroundColor({
                     "tabId": tabId,
